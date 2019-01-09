@@ -55,26 +55,30 @@ crosscheck archivelog all;
 delete force noprompt archivelog all;
 
 #Deletes flashback restore points
-declare
-   l_drop_stmn varchar2(300);
-begin
-   DBMS_OUTPUT.ENABLE(1000);
-   SELECT 'DROP RESTORE POINT ' || rp.name ||
+DECLARE
+   l_drop_stmn VARCHAR2(300);
+   CURSOR c1 IS
+      SELECT 'DROP RESTORE POINT ' || rp.name ||
           CASE
             WHEN UPPER(rp.pdb_restore_point) = 'YES' THEN
               ' FOR PLUGGABLE DATABASE ' || pdb.name
           END as cmd
-     INTO l_drop_stmn
      FROM v$restore_point rp
         , v$pdbs pdb
     WHERE rp.con_id = pdb.con_id(+);
-   EXECUTE IMMEDIATE l_drop_stmn;
-
+BEGIN
+   DBMS_OUTPUT.ENABLE(1000);
+   OPEN c1;
+   LOOP
+      FETCH c1 INTO l_drop_stmn;
+      EXIT WHEN c1%NOTFOUND;
+         EXECUTE IMMEDIATE l_drop_stmn;
+   END LOOP;
 EXCEPTION
    WHEN OTHERS THEN
       DBMS_OUTPUT.PUT_LINE(SQLERRM);
       NULL;
-end;
+END;
 /
 }
 </pre>
