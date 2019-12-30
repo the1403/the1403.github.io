@@ -2,7 +2,7 @@
 layout: post
 title: Database User Privilege Capture
 tags:
-- Pribilege capture
+- Privilege capture
 - Privilege
 - DBMS_PRIVILEGE_CAPTURE
 - CDB
